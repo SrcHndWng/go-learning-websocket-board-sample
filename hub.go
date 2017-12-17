@@ -108,6 +108,7 @@ func (hub *Hub) onMessage(data []byte, client *Client) {
 			return
 		}
 		msg.UserID = client.id
+		msg.Color = client.color
 		hub.broadcast(msg, client)
 	} else if kind == message.KindClear {
 		var msg message.Clear
@@ -116,5 +117,8 @@ func (hub *Hub) onMessage(data []byte, client *Client) {
 		}
 		msg.UserID = client.id
 		hub.broadcast(msg, client)
+	} else if kind == message.KindColorSelect {
+		color := gjson.GetBytes(data, "color").Str
+		client.color = color
 	}
 }

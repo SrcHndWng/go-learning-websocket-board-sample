@@ -11,4 +11,6 @@ const (
 	KindStroke
 	// KindClear message is sent when a user clears the screen
 	KindClear
+	// KindColorSelect message is send when a user selects color
+	KindColorSelect
 )

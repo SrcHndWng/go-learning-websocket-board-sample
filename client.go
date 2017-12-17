@@ -5,6 +5,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+const initialColor = "#000000"
+
 type Client struct {
 	id       string
 	hub      *Hub
@@ -16,7 +18,7 @@ type Client struct {
 func newClient(hub *Hub, socket *websocket.Conn) *Client {
 	return &Client{
 		id:       uuid.NewV4().String(),
-		color:    generateColor(),
+		color:    initialColor,
 		hub:      hub,
 		socket:   socket,
 		outbound: make(chan []byte),

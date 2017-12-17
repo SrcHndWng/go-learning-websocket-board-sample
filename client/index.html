@@ -16,6 +16,13 @@
           height="360">
   </canvas>
   <div>
+    <select id="colorSelect">
+        <option value="#000000">black</option>
+        <option value="#FF0000">red</option>
+        <option value="#FFFF00">yellow</option>
+        <option value="#0000FF">blue</option>
+        <option value="#008000">green</option>
+    </select>
     <button id="clearButton">Clear</button>
   </div>
   <script>
@@ -24,6 +31,7 @@
     MESSAGE_USER_LEFT = 3;
     MESSAGE_STROKE = 4;
     MESSAGE_CLEAR = 5;
+    MESSAGE_COLOR_SELECT = 6;
     window.onload = function () {
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext("2d");
@@ -36,8 +44,8 @@
         socket.onmessage = function (event) {
             var messages = event.data.split('\n');
             for (var i = 0; i < messages.length; i++) {
-            var message = JSON.parse(messages[i]);
-            onMessage(message);
+                var message = JSON.parse(messages[i]);
+                onMessage(message);
             }
         };
         function onMessage(message) {
@@ -66,6 +74,7 @@
                     var strokes = otherStrokes[message.userId];
                     strokes[strokes.length - 1] = strokes[strokes.length - 1].concat(message.points);
                 }
+                otherColors[message.userId] = message.color;
                 update();
                 break;
             case MESSAGE_CLEAR:
@@ -116,17 +125,24 @@
         }
         function drawStrokes(strokes) {
             for (var i = 0; i < strokes.length; i++) {
-            ctx.beginPath();
-            for (var j = 1; j < strokes[i].length; j++) {
-                var prev = strokes[i][j - 1];
-                var current = strokes[i][j];
-                ctx.moveTo(prev.x, prev.y);
-                ctx.lineTo(current.x, current.y);
-            }
-            ctx.closePath();
-            ctx.stroke();
+                ctx.beginPath();
+                for (var j = 1; j < strokes[i].length; j++) {
+                    var prev = strokes[i][j - 1];
+                    var current = strokes[i][j];
+                    ctx.moveTo(prev.x, prev.y);
+                    ctx.lineTo(current.x, current.y);
+                }
+                ctx.closePath();
+                ctx.stroke();
             }
         }
+        document.getElementById('colorSelect').onchange = function()
+        {
+            var selectedItem = this.options[ this.selectedIndex ];
+            var selectedColor = selectedItem.value;
+            strokeColor = selectedColor;
+            socket.send(JSON.stringify({ kind: MESSAGE_COLOR_SELECT, color: selectedColor }));
+        };
         document.getElementById('clearButton').onclick = function () {
             strokes = [];
             socket.send(JSON.stringify({ kind: MESSAGE_CLEAR }));
