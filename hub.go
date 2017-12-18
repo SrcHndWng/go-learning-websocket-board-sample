@@ -120,5 +120,14 @@ func (hub *Hub) onMessage(data []byte, client *Client) {
 	} else if kind == message.KindColorSelect {
 		color := gjson.GetBytes(data, "color").Str
 		client.color = color
+	} else if kind == message.KindText {
+		text := gjson.GetBytes(data, "text").Str
+		var msg message.Text
+		if json.Unmarshal(data, &msg) != nil {
+			return
+		}
+		msg.UserID = client.id
+		msg.Text = text
+		hub.broadcast(msg, client)
 	}
 }
