@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/tidwall/gjson"
 
-	"./message"
+	"github.com/SrcHndWng/go-learning-websocket-board-sample/message"
 )
 
 type Hub struct {
